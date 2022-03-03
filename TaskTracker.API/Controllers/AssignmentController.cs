@@ -51,5 +51,11 @@ namespace TaskTracker.API.Controllers
         { 
             _assignmentManager.DeleteTask(id);
         }
+
+        [HttpGet("GetByProjectId")]
+        public List<GetAssignmentsVM> GetAllTasksByProjectId(int projectId)
+        {
+            return _assignmentManager.GetAllTasksByProjectId(projectId);
+        }
     }
 }

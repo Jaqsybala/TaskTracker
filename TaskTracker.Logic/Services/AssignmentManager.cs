@@ -12,26 +12,26 @@ namespace TaskTracker.Logic.Services
     {
         private readonly DatabaseContext _databaseContext;
         public AssignmentManager(DatabaseContext context)
-        { 
+        {
             _databaseContext = context;
         }
         public int CreateTask(CreateAssignmentVM createAssignment)
         {
-            var project = _databaseContext.Projects.Find(createAssignment.ProjectId) ?? 
+            var project = _databaseContext.Projects.Find(createAssignment.ProjectId) ??
                             throw new NotFoundException(nameof(Project), createAssignment.ProjectId);
 
             var assignment = new Assignment
             {
-               Name = createAssignment.Name,
-               Description = createAssignment.Description,
-               Status = DataAccess.Enums.AssignmentStatus.ToDo,
-               Priority = createAssignment.Priority,
-               Project = project
+                Name = createAssignment.Name,
+                Description = createAssignment.Description,
+                Status = DataAccess.Enums.AssignmentStatus.ToDo,
+                Priority = createAssignment.Priority,
+                Project = project
             };
 
             _databaseContext.Add(assignment);
             _databaseContext.SaveChanges();
-            
+
             return assignment.Id;
         }
 
@@ -47,13 +47,28 @@ namespace TaskTracker.Logic.Services
             }
         }
 
+        public List<GetAssignmentsVM> GetAllTasksByProjectId(int projectId)
+        {
+            var list = _databaseContext.Assignments.Where(x => x.Project.Id == projectId)
+               .Select(x => new GetAssignmentsVM
+               {
+                   Id = x.Id,
+                   Name = x.Name,
+                   Description = x.Description,
+                   Priority = x.Priority,
+                   ProjectId = x.Project.Id,
+                   ProjectName = x.Project.ProjectName
+               }).ToList();
+            return list;
+        }
+
         public List<GetAssignmentsVM> GetAllTasks()
         {
             var list = _databaseContext.Assignments.Select(x => new GetAssignmentsVM
-            { 
+            {
                 Id = x.Id,
                 Name = x.Name,
-                Description= x.Description,
+                Description = x.Description,
                 Priority = x.Priority,
                 ProjectId = x.Project.Id,
                 ProjectName = x.Project.ProjectName
@@ -82,11 +97,11 @@ namespace TaskTracker.Logic.Services
             var assignment = _databaseContext.Assignments.Find(updateAssignmentVm.Id) ??
                             throw new NotFoundException(nameof(Assignment), updateAssignmentVm.Id);
             if (assignment != null)
-            { 
+            {
                 assignment.Name = updateAssignmentVm.Name;
                 assignment.Description = updateAssignmentVm.Description;
                 assignment.Priority = updateAssignmentVm.Priority;
-                assignment.Status = DataAccess.Enums.AssignmentStatus.InProgress;
+                assignment.Status = AssignmentStatus.InProgress;
                 _databaseContext.SaveChanges();
             }
             return assignment.Id;

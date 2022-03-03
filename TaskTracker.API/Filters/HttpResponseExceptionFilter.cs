@@ -22,7 +22,7 @@ namespace TaskTracker.API.Filters
 
                 context.ExceptionHandled = true;
             }
-            else
+            else if (context.Exception is Exception exception)
             {
                 context.Result = new ObjectResult("Упс, что-то пошло не так....")
                 {

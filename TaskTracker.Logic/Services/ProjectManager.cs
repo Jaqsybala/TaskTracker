@@ -93,7 +93,8 @@ namespace TaskTracker.Logic.Services
                     Id = x.Id, 
                     Name = x.Name,
                     Priority= x.Priority,
-                    Status = x.Status
+                    Status = x.Status,
+                    ProjectName= project.ProjectName
                 }).ToList()
             };
             return res;
